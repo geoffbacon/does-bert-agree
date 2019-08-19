@@ -18,8 +18,8 @@ start a GitHub issue and we'll take it from there. Alternatively, you can email 
 Bacon on bacon@berkeley.edu.
 
 ## Authors
-[Geoff Bacon](https://geoffbacon.github.io/)
-[Terry Regier](http://lclab.berkeley.edu/regier/)
+[Geoff Bacon](https://geoffbacon.github.io/)  
+[Terry Regier](http://lclab.berkeley.edu/regier/)  
 From the [Language & Cognition Lab](http://lclab.berkeley.edu/)
 
 ## License
