@@ -6,7 +6,7 @@ structure. Recent work examines the extent to which state-of-the-art models for
 pre-training representations, such as BERT, capture such structure-dependent
 phenomena, but is largely restricted to one phenomenon in English, number agreement
 between subjects and verbs. We evaluate BERT's sensitivity to four types of structure
-dependent agreement relations in a new automatically curated dataset across 29
+dependent agreement relations in a new automatically curated dataset across 26
 languages. We show that both the single-language and multilingual BERT models capture
 syntax-sensitive agreement patterns well in general, but we also highlight the
 specific linguistic contexts in which its performance degrades.
