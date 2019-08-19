@@ -11,10 +11,6 @@ languages. We show that both the single-language and multilingual BERT models ca
 syntax-sensitive agreement patterns well in general, but we also highlight the
 specific linguistic contexts in which its performance degrades.
 
-## Structure
-
-Describe the structure of the codebase.
-
 ## Contributing
 
 Contributions are welcome! For any bugs, questions, suggested improvements, please
@@ -23,6 +19,8 @@ Bacon on bacon@berkeley.edu.
 
 ## Authors
 [Geoff Bacon](https://geoffbacon.github.io/)
+[Terry Regier](http://lclab.berkeley.edu/regier/)
+From the [Language & Cognition Lab](http://lclab.berkeley.edu/)
 
 ## License
 
