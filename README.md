@@ -1,5 +1,7 @@
 # Does BERT agree?
 
+[Pre-print on arXiv](https://arxiv.org/abs/1908.09892)
+
 Learning representations that accurately model semantics is an important goal of
 natural language processing research. Many semantic phenomena depend on syntactic
 structure. Recent work examines the extent to which state-of-the-art models for
