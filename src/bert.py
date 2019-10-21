@@ -28,9 +28,9 @@ class BERT:
 
         """
         self.model = BertForMaskedLM.from_pretrained(name)
-        self.model.eval()
         if gpu:
             self.model.to("cuda:0")
+        self.model.eval()
         tokenizer = BertTokenizer.from_pretrained(name)
         self.tokenize = tokenizer.tokenize
         self.tokens_to_ids = tokenizer.convert_tokens_to_ids
