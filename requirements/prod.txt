@@ -1,4 +1,4 @@
 pyconll==1.1.4
-torch==1.0.1.post2
-pandas==0.24.2
-pytorch_pretrained_bert==0.6.1
+torch
+pandas
+transformers

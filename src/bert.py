@@ -6,7 +6,7 @@ Thanks to Yoav for making his code available.
 
 """
 import pandas as pd
-from pytorch_pretrained_bert import BertForMaskedLM, tokenization
+from transformers import BertForMaskedLM, BertTokenizer
 from torch import LongTensor  # pylint: disable=E0611
 
 from constants import MASK
@@ -29,7 +29,8 @@ class BERT:
         """
         self.model = BertForMaskedLM.from_pretrained(name)
         self.model.eval()
-        tokenizer = tokenization.BertTokenizer.from_pretrained(name)
+        self.model.to("cuda:0")
+        tokenizer = BertTokenizer.from_pretrained(name)
         self.tokenize = tokenizer.tokenize
         self.tokens_to_ids = tokenizer.convert_tokens_to_ids
         self.ids_to_tokens = tokenizer.ids_to_tokens
@@ -61,7 +62,7 @@ class BERT:
         target_index = tokens.index(MASK)
         token_ids = self.tokens_to_ids(tokens)
         tensor = LongTensor(token_ids).unsqueeze(0)
-        probs = self.model(tensor)[0, target_index]
+        probs = self.model(tensor)[0][0, target_index]
         probs = pd.DataFrame(probs.data.numpy(),
                              index=self.index,
                              columns=['p'])
