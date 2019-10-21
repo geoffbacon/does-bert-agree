@@ -39,7 +39,7 @@ def index_of_masked_word(sentence, bert):
         return -1
 
 
-def run(language, force_multilingual=False, fold_case=True):
+def run(language, force_multilingual=False, fold_case=True, gpu=False):
     """Run the experiment for `language`.
 
     Parameters
@@ -49,6 +49,8 @@ def run(language, force_multilingual=False, fold_case=True):
         Whether to use the multilingual model even on English
     fold_case : bool
         Whether to ignore caseing differences after making predictions
+    gpu : bool
+        Whether to run on GPU or not (useful for debugging)
 
     Returns
     -------
@@ -56,9 +58,9 @@ def run(language, force_multilingual=False, fold_case=True):
 
     """
     if (language == 'English') and (not force_multilingual):
-        bert = BERT(ENGLISH_MODEL)
+        bert = BERT(ENGLISH_MODEL, gpu=gpu)
     else:
-        bert = BERT(MULTILINGUAL_MODEL)
+        bert = BERT(MULTILINGUAL_MODEL, gpu=gpu)
     vocab = bert.vocab
     if fold_case:
         vocab = [word.lower() for word in vocab]

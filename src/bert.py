@@ -17,7 +17,7 @@ END = ['[SEP]']
 
 class BERT:
     """High-level interface for getting word predictions from BERT."""
-    def __init__(self, name):
+    def __init__(self, name, gpu=False):
         """Initialize BERT instance.
 
         Parameters
@@ -29,7 +29,8 @@ class BERT:
         """
         self.model = BertForMaskedLM.from_pretrained(name)
         self.model.eval()
-        self.model.to("cuda:0")
+        if gpu:
+            self.model.to("cuda:0")
         tokenizer = BertTokenizer.from_pretrained(name)
         self.tokenize = tokenizer.tokenize
         self.tokens_to_ids = tokenizer.convert_tokens_to_ids
