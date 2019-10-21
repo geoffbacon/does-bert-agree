@@ -28,7 +28,8 @@ class BERT:
 
         """
         self.model = BertForMaskedLM.from_pretrained(name)
-        if gpu:
+        self.gpu = gpu
+        if self.gpu:
             self.model.to("cuda:0")
         self.model.eval()
         tokenizer = BertTokenizer.from_pretrained(name)
@@ -63,6 +64,8 @@ class BERT:
         target_index = tokens.index(MASK)
         token_ids = self.tokens_to_ids(tokens)
         tensor = LongTensor(token_ids).unsqueeze(0)
+        if self.gpu:
+            tensor.to("cuda:0")
         probs = self.model(tensor)[0][0, target_index]
         probs = pd.DataFrame(probs.data.numpy(),
                              index=self.index,
