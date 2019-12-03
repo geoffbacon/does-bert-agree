@@ -51,6 +51,10 @@ features:
 cloze:
 	python $(SRC)/cloze.py
 
+# get probabilities for cloze examples
+probs:
+	python $(SRC)/probabilities.py
+
 # run the experiment
 experiment:
 	python $(SRC)/experiment.py

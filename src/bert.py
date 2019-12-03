@@ -6,8 +6,9 @@ Thanks to Yoav for making his code available.
 
 """
 import pandas as pd
-from transformers import BertForMaskedLM, BertTokenizer
+import torch
 from torch import LongTensor  # pylint: disable=E0611
+from transformers import BertForMaskedLM, BertTokenizer
 
 from constants import MASK
 
@@ -25,13 +26,15 @@ class BERT:
         name : str
             Name of the pre-trained BERT model to use. In this project, either
             'bert-base-multilingual-cased' or 'bert-base-cased'
+        cpu : bool
+            Whether to run on GPU or not (useful for debugging)
 
         """
         self.model = BertForMaskedLM.from_pretrained(name)
         self.gpu = gpu
         if self.gpu:
-            self.model.to("cuda:0")
-        self.model.eval()
+            self.model = self.model.cuda()
+        self.model = self.model.eval()
         tokenizer = BertTokenizer.from_pretrained(name)
         self.tokenize = tokenizer.tokenize
         self.tokens_to_ids = tokenizer.convert_tokens_to_ids
@@ -65,8 +68,10 @@ class BERT:
         token_ids = self.tokens_to_ids(tokens)
         tensor = LongTensor(token_ids).unsqueeze(0)
         if self.gpu:
-            tensor.to("cuda:0")
+            tensor = tensor.cuda()
         probs = self.model(tensor)[0][0, target_index]
+        if self.gpu:
+            probs = probs.cpu()
         probs = pd.DataFrame(probs.data.numpy(),
                              index=self.index,
                              columns=['p'])
