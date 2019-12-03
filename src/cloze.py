@@ -133,7 +133,7 @@ def count_distractors(sentence, token):
     return sum([agree(noun, token) for noun in nouns])
 
 
-def extract(sentence, target, controller, type_):
+def extract(sentence, target, controller, type_, reverse=False):
     """Extract relevant information for the cloze example.
 
     Parameters
@@ -142,6 +142,8 @@ def extract(sentence, target, controller, type_):
     target, controller : pyconll Token
     type_ : str
         Type of agreement relation
+    reverse : bool
+        We normally mask out the controller, but setting this to True masks out the target
 
     Returns
     -------
@@ -149,8 +151,12 @@ def extract(sentence, target, controller, type_):
 
     """
     example = {'type': type_, 'uid': sentence.id}
-    word_to_mask = controller
-    other_word = target
+    if reverse:
+        word_to_mask = target
+        other_word = controller
+    else:
+        word_to_mask = controller
+        other_word = target
     example['masked'] = mask(sentence, word_to_mask.id)
     example['pos'] = word_to_mask.upos
     # we want to cloze examples that involve agreement between two tokens,
@@ -292,8 +298,18 @@ def collect_agreement_relations(fname):
             if is_determiner_relation(token, head):
                 instance = extract(sentence, token, head, 'determiner')
                 result.append(instance)
+                instance = extract(
+                    sentence, token, head, 'determiner', reverse=True
+                )  # quick fix to get examples with both maskings
+                result.append(instance)
             elif is_modifying_adjective_relation(token, head):
                 instance = extract(sentence, token, head, 'modifying')
+                result.append(instance)
+                instance = extract(sentence,
+                                   token,
+                                   head,
+                                   'modifying',
+                                   reverse=True)
                 result.append(instance)
             # The Universal Dependency schema annotates a predicated adjective
             # or a verb as the head of a nominal. However, syntactically the
@@ -303,8 +319,16 @@ def collect_agreement_relations(fname):
             elif is_predicated_adjective_relation(head, token):
                 instance = extract(sentence, head, token, 'predicated')
                 result.append(instance)
+                instance = extract(sentence,
+                                   head,
+                                   token,
+                                   'predicated',
+                                   reverse=True)
+                result.append(instance)
             elif is_verb_relation(head, token):
                 instance = extract(sentence, head, token, 'verb')
+                result.append(instance)
+                instance = extract(sentence, head, token, 'verb', reverse=True)
                 result.append(instance)
             # The Universal Dependencies schema annotates copulas as dependents
             # of the predicate, and auxiliaries as dependents of the main verb.
@@ -317,10 +341,22 @@ def collect_agreement_relations(fname):
                 if subject:  # maybe we didn't find a subject
                     instance = extract(sentence, token, subject, 'verb')
                     result.append(instance)
+                    instance = extract(sentence,
+                                       token,
+                                       subject,
+                                       'verb',
+                                       reverse=True)
+                    result.append(instance)
             elif is_auxiliary_relation(token, head):
                 subject = find_subject(token, sentence)
                 if subject:
                     instance = extract(sentence, token, subject, 'verb')
+                    result.append(instance)
+                    instance = extract(sentence,
+                                       token,
+                                       subject,
+                                       'verb',
+                                       reverse=True)
                     result.append(instance)
     result = pd.DataFrame(result)
     # remove instances with tokens that disagree or have no values for all
