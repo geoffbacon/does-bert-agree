@@ -153,6 +153,7 @@ def extract(sentence, target, controller, type_):
     other_word = target
     example['masked'] = mask(sentence, word_to_mask.id)
     example['pos'] = word_to_mask.upos
+    example['lemma'] = word_to_mask.lemma
     # we want to cloze examples that involve agreement between two tokens,
     # but we also want to allow for missing feature values on the tokens
     # when a language doesn't mark that feature on that token (e.g. English
@@ -168,6 +169,7 @@ def extract(sentence, target, controller, type_):
     # at distance if there's no intervening noun, as in Linzen et al. (2016).
     # We also count the number of "incorrect" nouns in the sentence.
     example['other_masked'] = mask(sentence, other_word.id)
+    example['other_lemma'] = other_word.lemma
     example['intervening_noun'] = intervening_noun(sentence, target,
                                                    controller)
     example['num_distractors'] = count_distractors(sentence, word_to_mask)
@@ -331,8 +333,8 @@ def collect_agreement_relations(fname):
     result = result[agree & ~has_no_values]
     # order columns
     cols = [
-        'uid', 'type', 'pos', 'number', 'gender', 'case', 'person', 'masked',
-        'other_masked', 'intervening_noun', 'num_distractors'
+        'uid', 'lemma', 'type', 'pos', 'number', 'gender', 'case', 'person', 'masked',
+        'other_masked', 'other_lemma', 'intervening_noun', 'num_distractors'
     ]
     return result[cols]
 

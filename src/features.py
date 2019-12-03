@@ -18,7 +18,7 @@ from constants import LANGUAGES, NA
 from filenames import FEATURES_DIR, UNIMORPH_DIR, UNIVERSAL_DEPENDENCIES_DIR
 from utils import refresh
 
-COLS = ['word', 'pos', 'number', 'gender', 'case', 'person']
+COLS = ['lemma', 'word', 'pos', 'number', 'gender', 'case', 'person']
 
 # Preparing features from UniMorph
 
@@ -105,9 +105,9 @@ def prepare_um(language):
     with open(file_name) as file:
         for line in file:
             if line.split():
-                _, inflected, features = line.strip().split('\t')
+                lemma, inflected, features = line.strip().split('\t')
                 features = set(features.split(';'))
-                data = {'word': inflected}
+                data = {'word': inflected, 'lemma': lemma}
                 data['pos'] = map_pos(features)
                 data['number'] = map_number(features)
                 data['gender'] = map_gender(features)
@@ -174,7 +174,7 @@ def prepare_one_ud_file(fname):
         for token in sentence:
             pos = token.upos
             if pos in pos_of_interest:
-                data = {'word': token.form, 'pos': pos}
+                data = {'word': token.form, 'pos': pos, 'lemma': token.lemma}
                 for feature in ['number', 'gender', 'case', 'person']:
                     data[feature] = feature_value(token, feature)
                 result.append(data)
