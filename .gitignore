@@ -8,6 +8,9 @@ data/*
 # MacOS
 **/.DS_Store
 
+# Nohup output
+*.out
+
 # VS code
 .vscode/
 
