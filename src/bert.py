@@ -12,12 +12,13 @@ from transformers import BertForMaskedLM, BertTokenizer
 
 from constants import MASK
 
-START = ['[CLS]']
-END = ['[SEP]']
+START = ["[CLS]"]
+END = ["[SEP]"]
 
 
 class BERT:
     """High-level interface for getting word predictions from BERT."""
+
     def __init__(self, name, gpu=False):
         """Initialize BERT instance.
 
@@ -42,7 +43,7 @@ class BERT:
         # tokenizer.vocab is a collections.OrderedDict, not a regular Python
         # dictionary, so its keys always come out in the same order.
         self.vocab = list(tokenizer.vocab.keys())
-        self.index = pd.Index(self.vocab, name='word')
+        self.index = pd.Index(self.vocab, name="word")
 
     def predict(self, masked_sentence, fold_case=False):
         """Predict the masked word in `masked_sentence`.
@@ -72,10 +73,8 @@ class BERT:
         probs = self.model(tensor)[0][0, target_index]
         if self.gpu:
             probs = probs.cpu()
-        probs = pd.DataFrame(probs.data.numpy(),
-                             index=self.index,
-                             columns=['p'])
+        probs = pd.DataFrame(probs.data.numpy(), index=self.index, columns=["p"])
         if fold_case:
             probs.index = probs.index.str.lower()
-            return probs.groupby('word').mean()
+            return probs.groupby("word").mean()
         return probs

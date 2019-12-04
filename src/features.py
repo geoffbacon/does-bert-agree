@@ -18,7 +18,7 @@ from constants import LANGUAGES, NA
 from filenames import FEATURES_DIR, UNIMORPH_DIR, UNIVERSAL_DEPENDENCIES_DIR
 from utils import refresh
 
-COLS = ['lemma', 'word', 'pos', 'number', 'gender', 'case', 'person']
+COLS = ["lemma", "word", "pos", "number", "gender", "case", "person"]
 
 # Preparing features from UniMorph
 
@@ -47,6 +47,7 @@ def make_mapper(mapping):  # noqa: D202
     function
 
     """
+
     def func(features):
         for feature in features:
             if feature in mapping:
@@ -60,20 +61,20 @@ def make_mapper(mapping):  # noqa: D202
 
 # these are the only POS that we are interested in for this project
 POS_MAPPING = {
-    'V': 'VERB',
-    'V.PTCP': 'VERB',
-    'N': 'NOUN',
-    'PRO': 'PRON',
-    'ADJ': 'ADJ',
-    'ART': 'DET',
-    'DET': 'DET',
-    'AUX': 'AUX'
+    "V": "VERB",
+    "V.PTCP": "VERB",
+    "N": "NOUN",
+    "PRO": "PRON",
+    "ADJ": "ADJ",
+    "ART": "DET",
+    "DET": "DET",
+    "AUX": "AUX",
 }
-NUMBER_MAPPING = {'SG': 'Sing', 'PL': 'Plur'}
-GENDER_MAPPING = {'MASC': 'Masc', 'FEM': 'Fem', 'NEUT': 'Neut'}
+NUMBER_MAPPING = {"SG": "Sing", "PL": "Plur"}
+GENDER_MAPPING = {"MASC": "Masc", "FEM": "Fem", "NEUT": "Neut"}
 # we restrict our attention to the core case values
-CASE_MAPPING = {'NOM': 'Nom', 'ACC': 'Acc', 'ERG': 'Erg', 'ABS': 'Abs'}
-PERSON_MAPPING = {'1': '1', '2': '2', '3': '3'}
+CASE_MAPPING = {"NOM": "Nom", "ACC": "Acc", "ERG": "Erg", "ABS": "Abs"}
+PERSON_MAPPING = {"1": "1", "2": "2", "3": "3"}
 
 map_pos = make_mapper(POS_MAPPING)
 map_number = make_mapper(NUMBER_MAPPING)
@@ -105,14 +106,14 @@ def prepare_um(language):
     with open(file_name) as file:
         for line in file:
             if line.split():
-                lemma, inflected, features = line.strip().split('\t')
-                features = set(features.split(';'))
-                data = {'word': inflected, 'lemma': lemma}
-                data['pos'] = map_pos(features)
-                data['number'] = map_number(features)
-                data['gender'] = map_gender(features)
-                data['case'] = map_case(features)
-                data['person'] = map_person(features)
+                lemma, inflected, features = line.strip().split("\t")
+                features = set(features.split(";"))
+                data = {"word": inflected, "lemma": lemma}
+                data["pos"] = map_pos(features)
+                data["number"] = map_number(features)
+                data["gender"] = map_gender(features)
+                data["case"] = map_case(features)
+                data["person"] = map_person(features)
                 result.append(data)
     return pd.DataFrame(result)
 
@@ -120,8 +121,11 @@ def prepare_um(language):
 # Preparing features from UD
 
 POSSIBLE_FEATURE_VALUES = set(
-    list(NUMBER_MAPPING.values()) + list(GENDER_MAPPING.values()) +
-    list(CASE_MAPPING.values()) + list(PERSON_MAPPING.values()))
+    list(NUMBER_MAPPING.values())
+    + list(GENDER_MAPPING.values())
+    + list(CASE_MAPPING.values())
+    + list(PERSON_MAPPING.values())
+)
 
 
 def feature_value(token, feature):
@@ -174,8 +178,8 @@ def prepare_one_ud_file(fname):
         for token in sentence:
             pos = token.upos
             if pos in pos_of_interest:
-                data = {'word': token.form, 'pos': pos, 'lemma': token.lemma}
-                for feature in ['number', 'gender', 'case', 'person']:
+                data = {"word": token.form, "pos": pos, "lemma": token.lemma}
+                for feature in ["number", "gender", "case", "person"]:
                     data[feature] = feature_value(token, feature)
                 result.append(data)
     return pd.DataFrame(result)
@@ -195,7 +199,7 @@ def prepare_ud(language):
         Contains columns for word form, pos, number, gender, case and person
 
     """
-    pattern = os.path.join(UNIVERSAL_DEPENDENCIES_DIR, '**/*.conllu')
+    pattern = os.path.join(UNIVERSAL_DEPENDENCIES_DIR, "**/*.conllu")
     file_names = [f for f in glob(pattern, recursive=True) if language in f]
     result = []
     for file_name in file_names:
@@ -241,22 +245,22 @@ def prepare(language):
         result = pd.concat([ud, um], ignore_index=True, sort=False)
     except FileNotFoundError:  # No UniMorph data for this language
         result = ud
-    result['word'] = result['word'].str.lower()
-    result['person'] = result['person'].astype(str)
+    result["word"] = result["word"].str.lower()
+    result["person"] = result["person"].astype(str)
     result.drop_duplicates(inplace=True)
     # drop rows with missing words
-    result.dropna(subset=['word', 'pos'], how='any', inplace=True)
+    result.dropna(subset=["word", "pos"], how="any", inplace=True)
     # drop rows with no feature values in all four features
-    features = ['number', 'gender', 'case', 'person']
+    features = ["number", "gender", "case", "person"]
     has_no_values = (result[features] == NA).all(axis=1)
     result = result[~has_no_values]
     return result[COLS]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     refresh(FEATURES_DIR)
     for name, code in LANGUAGES.items():
         features = prepare(name)
-        file_name = os.path.join(FEATURES_DIR, f'{code}.csv')
+        file_name = os.path.join(FEATURES_DIR, f"{code}.csv")
         features.to_csv(file_name, index=False)
-        print(f'Prepared features for {name}')
+        print(f"Prepared features for {name}")

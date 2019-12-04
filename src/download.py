@@ -30,17 +30,17 @@ def download(language):
         Exit status of the git command (zero if succesful, non-zero if not)
 
     """
-    url = f'https://github.com/unimorph/{language}.git'
+    url = f"https://github.com/unimorph/{language}.git"
     destination = os.path.join(UNIMORPH_DIR, language)
-    command = f'git clone --quiet {url} {destination}'
+    command = f"git clone --quiet {url} {destination}"
     return os.system(command)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     refresh(UNIMORPH_DIR)
     for name, code in LANGUAGES.items():
         status = download(code)
         if status == 0:
-            print(f'Downloaded UniMorph data for {name}')
+            print(f"Downloaded UniMorph data for {name}")
         else:
-            print(f'No UniMorph data for {name}')
+            print(f"No UniMorph data for {name}")
