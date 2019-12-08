@@ -8,13 +8,15 @@ from tqdm import tqdm
 
 from filenames import CLOZE_DIR, FEATURES_DIR, PROBABILITIES_DIR
 
-results = []
 cols = ["number", "gender", "case", "person"]
-# for lg in os.listdir(PROBABILITIES_DIR):
-for lg in ["eng"]:
+languages = os.listdir(PROBABILITIES_DIR)
+for lg in ["hun", "gle", "fin"]:  # already done
+    languages.remove(lg)
+for lg in languages:
+    results = []
     print(lg)
     features_filename = os.path.join(FEATURES_DIR, f"{lg}.csv")
-    features = pd.read_csv(features_filename)
+    features = pd.read_csv(features_filename, dtype={"person": str})
     cloze_filename = os.path.join(CLOZE_DIR, f"{lg}.csv")
     cloze = pd.read_csv(cloze_filename)
     for _, row in tqdm(cloze.iterrows()):
@@ -70,8 +72,8 @@ for lg in ["eng"]:
                     results.append(example)
         except FileNotFoundError:
             continue
-results = pd.DataFrame(results)
-results["percentage"] = 100 * (
-    results["num_incorrect_lemmata"] / results["num_lemmata"]
-)
-results.to_csv("data/bylemmata.csv", index=False)
+    results = pd.DataFrame(results)
+    results["percentage"] = 100 * (
+        results["num_incorrect_lemmata"] / results["num_lemmata"]
+    )
+    results.to_csv(f"data/bylemmata/{lg}.csv", index=False)
